@@ -1,0 +1,1456 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShareIt – Elfogyott a neted? Most már nem fog!</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-dark: #2d4a2d;
+    --green-mid: #3d6b3d;
+    --green-light: #5a8a5a;
+    --cream: #e8e0cc;
+    --cream-light: #f2ede0;
+    --paper: #ddd5bc;
+    --text-dark: #1a2e1a;
+    --text-mid: #3a5a3a;
+    --accent: #8fbc5a;
+    --white: #faf8f2;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Lato', sans-serif;
+    background-color: var(--cream-light);
+    color: var(--text-dark);
+    overflow-x: hidden;
+  }
+
+  /* Texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.6;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: var(--green-dark);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 40px;
+    border-bottom: 3px solid var(--accent);
+  }
+
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    color: var(--cream);
+    letter-spacing: 2px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .nav-logo span {
+    font-size: 1.3rem;
+    color: var(--accent);
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 30px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--cream);
+    text-decoration: none;
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 700;
+    opacity: 0.85;
+    transition: opacity 0.2s, color 0.2s;
+  }
+
+  .nav-links a:hover { opacity: 1; color: var(--accent); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    background: var(--green-dark);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 120px 30px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 30% 60%, rgba(143,188,90,0.12) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 30%, rgba(93,143,60,0.1) 0%, transparent 50%);
+  }
+
+  .hero-badge {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--green-dark);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 6px 18px;
+    border-radius: 30px;
+    margin-bottom: 28px;
+    animation: fadeDown 0.8s ease both;
+  }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3.5rem, 10vw, 8rem);
+    font-weight: 900;
+    color: var(--cream);
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: -2px;
+    animation: fadeDown 0.9s ease 0.1s both;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .hero-sub {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.2rem, 3vw, 2rem);
+    color: var(--cream);
+    opacity: 0.8;
+    margin-top: 16px;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    animation: fadeDown 1s ease 0.2s both;
+  }
+
+  .hero-desc {
+    max-width: 560px;
+    margin: 30px auto 0;
+    font-size: 1.1rem;
+    color: var(--paper);
+    opacity: 0.85;
+    line-height: 1.7;
+    animation: fadeDown 1s ease 0.3s both;
+  }
+
+  .hero-cta {
+    margin-top: 44px;
+    animation: fadeDown 1s ease 0.4s both;
+  }
+
+  .btn-primary {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--green-dark);
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 16px 44px;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 20px rgba(143,188,90,0.3);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(143,188,90,0.45);
+  }
+
+  .hero-wifi-icons {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    opacity: 0.3;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  .wifi-bar { 
+    width: 6px; 
+    background: var(--accent);
+    border-radius: 3px;
+    animation: wifiPulse 1.4s ease-in-out infinite;
+  }
+  .wifi-bar:nth-child(1) { height: 10px; animation-delay: 0s; }
+  .wifi-bar:nth-child(2) { height: 18px; animation-delay: 0.2s; }
+  .wifi-bar:nth-child(3) { height: 26px; animation-delay: 0.4s; }
+  .wifi-bar:nth-child(4) { height: 34px; animation-delay: 0.6s; }
+
+  @keyframes wifiPulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+
+  /* SECTION STYLES */
+  section { position: relative; }
+
+  .section-divider {
+    height: 6px;
+    background: linear-gradient(90deg, var(--green-dark), var(--accent), var(--green-mid));
+  }
+
+  .section-label {
+    display: inline-block;
+    background: var(--green-dark);
+    color: var(--cream);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    margin-bottom: 20px;
+  }
+
+  /* WHAT IS */
+  .what-is {
+    background: var(--cream-light);
+    padding: 100px 40px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    max-width: 1100px;
+    margin: 0 auto;
+    align-items: center;
+  }
+
+  .what-is-text h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 900;
+    line-height: 1.1;
+    color: var(--green-dark);
+    margin-bottom: 24px;
+  }
+
+  .what-is-text p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--text-mid);
+    margin-bottom: 16px;
+  }
+
+  .what-is-visual {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .visual-card {
+    background: var(--white);
+    border: 2px solid var(--green-dark);
+    border-radius: 8px;
+    padding: 20px 24px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .visual-card:hover {
+    transform: translateX(6px);
+    box-shadow: -4px 4px 0 var(--green-dark);
+  }
+
+  .card-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+    line-height: 1;
+    margin-top: 2px;
+  }
+
+  .card-content h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--green-dark);
+    margin-bottom: 4px;
+  }
+
+  .card-content p {
+    font-size: 0.9rem;
+    color: var(--text-mid);
+    line-height: 1.5;
+  }
+
+  /* ORIGIN STORY */
+  .origin {
+    background: var(--green-dark);
+    padding: 90px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .origin::before {
+    content: '"';
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Playfair Display', serif;
+    font-size: 300px;
+    color: rgba(255,255,255,0.03);
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .origin-inner {
+    max-width: 700px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  .origin h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 3vw, 2.8rem);
+    color: var(--cream);
+    margin-bottom: 30px;
+    line-height: 1.2;
+  }
+
+  .origin-quote {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+    font-style: italic;
+    color: var(--accent);
+    line-height: 1.6;
+    margin-bottom: 30px;
+    padding: 0 20px;
+  }
+
+  .origin p {
+    color: var(--paper);
+    font-size: 1.05rem;
+    line-height: 1.8;
+    opacity: 0.85;
+  }
+
+  .festival-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(143,188,90,0.15);
+    border: 1px solid rgba(143,188,90,0.3);
+    color: var(--accent);
+    padding: 10px 20px;
+    border-radius: 40px;
+    font-size: 0.9rem;
+    margin-top: 30px;
+  }
+
+  /* HOW IT WORKS */
+  .how-it-works {
+    background: var(--cream-light);
+    padding: 100px 40px;
+  }
+
+  .how-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 60px;
+  }
+
+  .section-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 900;
+    color: var(--green-dark);
+    margin-bottom: 16px;
+  }
+
+  .section-header p {
+    color: var(--text-mid);
+    font-size: 1.05rem;
+    max-width: 540px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+
+  .flow-diagram {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    position: relative;
+  }
+
+  .flow-diagram::before {
+    content: '';
+    position: absolute;
+    top: 60px;
+    left: 16.67%;
+    right: 16.67%;
+    height: 3px;
+    background: var(--green-dark);
+    z-index: 0;
+  }
+
+  .flow-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 0 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .flow-node-num {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--green-dark);
+    color: var(--cream);
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    border: 4px solid var(--cream-light);
+    box-shadow: 0 0 0 3px var(--green-dark);
+    transition: transform 0.2s;
+  }
+
+  .flow-node:hover .flow-node-num {
+    transform: scale(1.1);
+    background: var(--accent);
+    color: var(--green-dark);
+  }
+
+  .flow-node h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--green-dark);
+    margin-bottom: 10px;
+  }
+
+  .flow-node p {
+    font-size: 0.9rem;
+    color: var(--text-mid);
+    line-height: 1.6;
+  }
+
+  /* NETWORK ANIMATION */
+  .network-section {
+    background: var(--green-mid);
+    padding: 80px 40px;
+    text-align: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .network-canvas {
+    position: relative;
+    width: 100%;
+    max-width: 700px;
+    height: 300px;
+    margin: 40px auto;
+  }
+
+  .network-node {
+    position: absolute;
+    background: var(--cream);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    animation: nodeFloat 3s ease-in-out infinite;
+  }
+
+  .network-node.router {
+    width: 70px; height: 70px;
+    background: var(--green-dark);
+    border: 3px solid var(--accent);
+  }
+
+  .network-node.device {
+    width: 50px; height: 50px;
+    background: var(--cream);
+  }
+
+  @keyframes nodeFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .network-section h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    color: var(--cream);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.4;
+  }
+
+  /* STEPS */
+  .steps {
+    background: var(--white);
+    padding: 100px 40px;
+  }
+
+  .steps-inner {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .steps-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-top: 50px;
+  }
+
+  .step-card {
+    background: var(--cream-light);
+    border: 2px solid var(--green-dark);
+    border-radius: 12px;
+    padding: 30px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .step-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(45,74,45,0.15);
+  }
+
+  .step-card::before {
+    content: attr(data-num);
+    position: absolute;
+    top: -20px;
+    right: -10px;
+    font-family: 'Playfair Display', serif;
+    font-size: 7rem;
+    font-weight: 900;
+    color: var(--green-dark);
+    opacity: 0.05;
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .step-icon {
+    font-size: 2.4rem;
+    margin-bottom: 14px;
+  }
+
+  .step-card h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--green-dark);
+    margin-bottom: 10px;
+  }
+
+  .step-card p {
+    font-size: 0.95rem;
+    color: var(--text-mid);
+    line-height: 1.6;
+  }
+
+  .step-number-tag {
+    display: inline-block;
+    background: var(--green-dark);
+    color: var(--accent);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    padding: 4px 10px;
+    border-radius: 3px;
+    margin-bottom: 14px;
+  }
+
+  /* WHO BENEFITS */
+  .benefits {
+    background: var(--paper);
+    padding: 100px 40px;
+  }
+
+  .benefits-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .benefits-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin-top: 50px;
+  }
+
+  .benefit-block {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 40px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .benefit-block.primary {
+    background: var(--green-dark);
+    color: var(--cream);
+  }
+
+  .benefit-block.primary h3 {
+    color: var(--accent);
+  }
+
+  .benefit-block.primary p { color: var(--paper); opacity: 0.85; }
+
+  .benefit-tag {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+  }
+
+  .benefit-block.primary .benefit-tag {
+    background: rgba(143,188,90,0.2);
+    color: var(--accent);
+  }
+
+  .benefit-block:not(.primary) .benefit-tag {
+    background: var(--cream-light);
+    color: var(--green-dark);
+  }
+
+  .benefit-block h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--green-dark);
+    margin-bottom: 14px;
+  }
+
+  .benefit-block p {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: var(--text-mid);
+  }
+
+  .benefit-emoji {
+    font-size: 3rem;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  /* USE CASES */
+  .use-cases {
+    background: var(--green-dark);
+    padding: 90px 40px;
+    text-align: center;
+  }
+
+  .use-cases h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 3vw, 2.8rem);
+    color: var(--cream);
+    margin-bottom: 16px;
+  }
+
+  .use-cases > p {
+    color: var(--paper);
+    opacity: 0.8;
+    margin-bottom: 50px;
+    font-size: 1.05rem;
+  }
+
+  .cases-row {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .case-pill {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(143,188,90,0.3);
+    color: var(--cream);
+    padding: 16px 28px;
+    border-radius: 50px;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background 0.2s, border-color 0.2s, transform 0.2s;
+  }
+
+  .case-pill:hover {
+    background: rgba(143,188,90,0.15);
+    border-color: var(--accent);
+    transform: scale(1.05);
+  }
+
+  .case-pill span { font-size: 1.4rem; }
+
+  /* INNOVATION */
+  .innovation {
+    background: var(--cream-light);
+    padding: 100px 40px;
+  }
+
+  .innovation-inner {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .innovation-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin-top: 50px;
+    align-items: start;
+  }
+
+  .innovation-text h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--green-dark);
+    margin-bottom: 18px;
+    line-height: 1.2;
+  }
+
+  .innovation-text p {
+    color: var(--text-mid);
+    font-size: 1rem;
+    line-height: 1.8;
+    margin-bottom: 14px;
+  }
+
+  .highlight-box {
+    background: var(--green-dark);
+    color: var(--cream);
+    padding: 30px;
+    border-radius: 12px;
+  }
+
+  .highlight-box h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+
+  .highlight-box p {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    opacity: 0.85;
+  }
+
+  .comparison-table {
+    background: var(--white);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 2px solid var(--green-dark);
+  }
+
+  .comparison-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-bottom: 1px solid var(--paper);
+  }
+
+  .comparison-row:last-child { border-bottom: none; }
+
+  .comparison-row.header {
+    background: var(--green-dark);
+  }
+
+  .comparison-cell {
+    padding: 14px 20px;
+    font-size: 0.9rem;
+    color: var(--text-mid);
+    line-height: 1.4;
+  }
+
+  .comparison-row.header .comparison-cell {
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .comparison-cell.bad { color: #c0392b; }
+  .comparison-cell.good { color: var(--green-mid); font-weight: 700; }
+
+  .comparison-cell:first-child {
+    border-right: 1px solid var(--paper);
+  }
+
+  /* IMPACT */
+  .impact {
+    background: var(--paper);
+    padding: 90px 40px;
+    text-align: center;
+  }
+
+  .impact-inner {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .impact h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    color: var(--green-dark);
+    margin-bottom: 16px;
+  }
+
+  .impact > .impact-inner > p {
+    color: var(--text-mid);
+    font-size: 1.05rem;
+    margin-bottom: 50px;
+  }
+
+  .impact-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    margin-bottom: 50px;
+  }
+
+  .stat-block {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 36px 20px;
+    border: 2px solid transparent;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .stat-block:hover {
+    border-color: var(--green-dark);
+    transform: translateY(-4px);
+  }
+
+  .stat-icon { font-size: 2.5rem; margin-bottom: 12px; }
+
+  .stat-block h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--green-dark);
+    margin-bottom: 8px;
+  }
+
+  .stat-block p {
+    font-size: 0.9rem;
+    color: var(--text-mid);
+    line-height: 1.5;
+  }
+
+  /* QUOTE */
+  .big-quote {
+    background: var(--green-dark);
+    padding: 80px 40px;
+    text-align: center;
+  }
+
+  .big-quote blockquote {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.3rem, 2.5vw, 2rem);
+    font-style: italic;
+    color: var(--cream);
+    max-width: 700px;
+    margin: 0 auto;
+    line-height: 1.6;
+    position: relative;
+    padding: 0 40px;
+  }
+
+  .big-quote blockquote::before,
+  .big-quote blockquote::after {
+    content: '"';
+    font-size: 5rem;
+    color: var(--accent);
+    opacity: 0.4;
+    position: absolute;
+    font-style: normal;
+    line-height: 0.7;
+  }
+
+  .big-quote blockquote::before { top: 0; left: 0; }
+  .big-quote blockquote::after { content: '"'; bottom: -20px; right: 0; }
+
+  /* TEAM */
+  .team {
+    background: var(--cream-light);
+    padding: 100px 40px;
+  }
+
+  .team-inner {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .team-inner h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 3.5vw, 2.8rem);
+    color: var(--green-dark);
+    margin-bottom: 14px;
+  }
+
+  .team-inner > p {
+    color: var(--text-mid);
+    font-size: 1.05rem;
+    margin-bottom: 50px;
+  }
+
+  .team-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+  }
+
+  .team-card {
+    background: var(--white);
+    border: 2px solid var(--green-dark);
+    border-radius: 16px;
+    padding: 40px 30px;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .team-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 40px rgba(45,74,45,0.12);
+  }
+
+  .team-avatar {
+    width: 80px;
+    height: 80px;
+    background: var(--green-dark);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--accent);
+    margin: 0 auto 20px;
+  }
+
+  .team-card h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--green-dark);
+    margin-bottom: 8px;
+  }
+
+  .team-role {
+    display: inline-block;
+    background: var(--cream-light);
+    color: var(--green-dark);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border-radius: 20px;
+    margin-bottom: 14px;
+  }
+
+  .team-card p {
+    font-size: 0.9rem;
+    color: var(--text-mid);
+    line-height: 1.6;
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--text-dark);
+    padding: 60px 40px;
+    text-align: center;
+    border-top: 4px solid var(--accent);
+  }
+
+  .footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--cream);
+    letter-spacing: 4px;
+    margin-bottom: 16px;
+  }
+
+  .footer-tagline {
+    color: var(--accent);
+    font-size: 0.85rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 30px;
+  }
+
+  footer p {
+    color: var(--paper);
+    opacity: 0.5;
+    font-size: 0.85rem;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.7; }
+  }
+
+  /* Scroll animations */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    nav { padding: 12px 20px; }
+    .nav-links { display: none; }
+    .what-is, .benefits-grid, .innovation-grid, .steps-grid, .team-cards, .flow-diagram, .impact-stats {
+      grid-template-columns: 1fr;
+    }
+    .flow-diagram::before { display: none; }
+    .what-is { padding: 60px 20px; }
+    section { padding-left: 20px; padding-right: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <span><img src="logo.png" alt="" style="width: 10%;"></span> ShareIt
+  </div>
+  <ul class="nav-links">
+    <li><a href="#what">Mi ez?</a></li>
+    <li><a href="#how">Hogyan?</a></li>
+    <li><a href="#steps">Lépések</a></li>
+    <li><a href="#benefits">Kinek jó?</a></li>
+    <li><a href="#team">Csapat</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">📡 A jövő internetezése</div>
+  <h1>Elfogyott<br>a <em>neted?</em></h1>
+  <div class="hero-sub">Most már nem fog</div>
+  <p class="hero-desc">A ShareIt lehetővé teszi, hogy egymás közt osszátok meg a megmaradt mobilinternetet — egyszerűen, gyorsan, biztonságosan.</p>
+  <div class="hero-cta">
+    <a href="#what" class="btn-primary">Tudj meg többet ↓</a>
+  </div>
+  <div class="hero-wifi-icons">
+    <div class="wifi-bar"></div>
+    <div class="wifi-bar"></div>
+    <div class="wifi-bar"></div>
+    <div class="wifi-bar"></div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- WHAT IS -->
+<section id="what">
+  <div class="what-is">
+    <div class="what-is-text reveal">
+      <div class="section-label">Mi a ShareIt?</div>
+      <h2>Gondolj rá, mint egy Uber — de az internet számára</h2>
+      <p>Valaki melleted rengeteg mobilinternettel rendelkezik, amit úgysem használ el. Te meg épp net nélkül vagy. A ShareIt összehozza a kettőtöket!</p>
+      <p>A szolgáltatók egy speciális kis készülékkel (ShareIt router) sugározzák szét a megmaradt adatkeretüket Wi-Fi-n keresztül. Te rácsatlakozol, fizetsz egy apró összeget, és máris netezész.</p>
+    </div>
+    <div class="what-is-visual reveal">
+      <div class="visual-card">
+        <div class="card-icon">📱</div>
+        <div class="card-content">
+          <h4>Te (felhasználó)</h4>
+          <p>Elfogyott a neted, de szükséged van rá. Csatlakozol egy közeli ShareIt routerhez és perceken belül netezel.</p>
+        </div>
+      </div>
+      <div class="visual-card">
+        <div class="card-icon">📡</div>
+        <div class="card-content">
+          <h4>ShareIt Router</h4>
+          <p>Egy kis, egyszerűen felszerelhető eszköz, ami biztonságosan közvetíti az internetet a megosztótól feléd.</p>
+        </div>
+      </div>
+      <div class="visual-card">
+        <div class="card-icon">💰</div>
+        <div class="card-content">
+          <h4>A megosztó (szolgáltató)</h4>
+          <p>Neki havi keret van, amit nem használ el. Ahelyett hogy kárba vesz, megosztja — és pénzt keres belőle.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ORIGIN STORY -->
+<section class="origin">
+  <div class="origin-inner reveal">
+    <div class="section-label" style="background: rgba(143,188,90,0.2); color: var(--accent); margin: 0 auto 20px; display: block; width: fit-content;">Hogyan jött az ötlet?</div>
+    <h2>Egy fesztiválon, amikor semmi sem működött</h2>
+    <p class="origin-quote">„Tömeg, zene, és egy barát, aki pár méterre volt — de nem lehetett elérni, mert mindkettőnk nete lement."</p>
+    <p>A csapat egyik tagja éppen egy fesztiválon volt, amikor rájött: mindenki körülötte telefonnal a kézben állt, de senki sem tudott kommunikálni — mert mindenki nete tele volt, vagy teljesen lemerült. Ebből a frusztráló pillanatból született a ShareIt ötlete.</p>
+    <div class="festival-badge">🎪 Fesztiválon született az ötlet &nbsp;·&nbsp; 2024</div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- HOW IT WORKS -->
+<section id="how" class="how-it-works">
+  <div class="how-inner">
+    <div class="section-header reveal">
+      <div class="section-label">Hogyan működik?</div>
+      <h2>Szuper egyszerű — 3 lépés az egész</h2>
+      <p>Nincs app telepítés, nincs bonyolult beállítás. Csak csatlakozz, fizess, és már netezesz is.</p>
+    </div>
+    <div class="flow-diagram">
+      <div class="flow-node reveal">
+        <div class="flow-node-num">1</div>
+        <h4>Valaki megosztja</h4>
+        <p>Egy ember, akinek sok megmaradt adata van, bekapcsolja a ShareIt routert és sugározni kezd.</p>
+      </div>
+      <div class="flow-node reveal">
+        <div class="flow-node-num">2</div>
+        <h4>Te csatlakozol</h4>
+        <p>A telefon Wi-Fi listájában megjelenik a közeli ShareIt router. Rákattintasz, és automatikusan a weboldalra kerülsz.</p>
+      </div>
+      <div class="flow-node reveal">
+        <div class="flow-node-num">3</div>
+        <h4>Fizetsz & netezesz</h4>
+        <p>A weboldalon megvásárolod a szükséges adatmennyiséget, és máris az interneten vagy! 🎉</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NETWORK VISUAL -->
+<section class="network-section">
+  <div class="section-label" style="background: rgba(255,255,255,0.1); color: var(--accent); display: block; width: fit-content; margin: 0 auto 20px;">A hálózat</div>
+  <h3 class="reveal">Minél többen csatlakoznak, <br>annál erősebb a hálózat</h3>
+
+  <div class="network-canvas reveal">
+    <svg width="100%" height="100%" viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg">
+      <!-- Connection lines -->
+      <line x1="350" y1="150" x2="150" y2="80" stroke="rgba(143,188,90,0.4)" stroke-width="2" stroke-dasharray="6,4"/>
+      <line x1="350" y1="150" x2="550" y2="80" stroke="rgba(143,188,90,0.4)" stroke-width="2" stroke-dasharray="6,4"/>
+      <line x1="350" y1="150" x2="100" y2="220" stroke="rgba(143,188,90,0.4)" stroke-width="2" stroke-dasharray="6,4"/>
+      <line x1="350" y1="150" x2="600" y2="220" stroke="rgba(143,188,90,0.4)" stroke-width="2" stroke-dasharray="6,4"/>
+      <line x1="350" y1="150" x2="350" y2="40" stroke="rgba(143,188,90,0.4)" stroke-width="2" stroke-dasharray="6,4"/>
+      <line x1="350" y1="150" x2="220" y2="250" stroke="rgba(143,188,90,0.4)" stroke-width="2" stroke-dasharray="6,4"/>
+      <line x1="350" y1="150" x2="480" y2="250" stroke="rgba(143,188,90,0.4)" stroke-width="2" stroke-dasharray="6,4"/>
+
+      <!-- Central router -->
+      <circle cx="350" cy="150" r="38" fill="#2d4a2d" stroke="#8fbc5a" stroke-width="3"/>
+      <text x="350" y="158" text-anchor="middle" font-size="22">📡</text>
+
+      <!-- Devices -->
+      <circle cx="150" cy="80" r="25" fill="#e8e0cc" stroke="#2d4a2d" stroke-width="2"/>
+      <text x="150" y="88" text-anchor="middle" font-size="16">📱</text>
+
+      <circle cx="550" cy="80" r="25" fill="#e8e0cc" stroke="#2d4a2d" stroke-width="2"/>
+      <text x="550" y="88" text-anchor="middle" font-size="16">💻</text>
+
+      <circle cx="100" cy="220" r="25" fill="#e8e0cc" stroke="#2d4a2d" stroke-width="2"/>
+      <text x="100" y="228" text-anchor="middle" font-size="16">📱</text>
+
+      <circle cx="600" cy="220" r="25" fill="#e8e0cc" stroke="#2d4a2d" stroke-width="2"/>
+      <text x="600" y="228" text-anchor="middle" font-size="16">📱</text>
+
+      <circle cx="350" cy="40" r="25" fill="#e8e0cc" stroke="#2d4a2d" stroke-width="2"/>
+      <text x="350" y="48" text-anchor="middle" font-size="16">📱</text>
+
+      <circle cx="220" cy="250" r="25" fill="#e8e0cc" stroke="#2d4a2d" stroke-width="2"/>
+      <text x="220" y="258" text-anchor="middle" font-size="16">💻</text>
+
+      <circle cx="480" cy="250" r="25" fill="#e8e0cc" stroke="#2d4a2d" stroke-width="2"/>
+      <text x="480" y="258" text-anchor="middle" font-size="16">📱</text>
+    </svg>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- STEPS -->
+<section id="steps" class="steps">
+  <div class="steps-inner">
+    <div class="section-header reveal">
+      <div class="section-label">Lépések a csatlakozáshoz</div>
+      <h2>Négy egyszerű lépés</h2>
+      <p>Olyan egyszerű, mint a Wi-Fi csatlakozás az iskolában. Ígérjük!</p>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card reveal" data-num="1">
+        <div class="step-number-tag">1. lépés</div>
+        <div class="step-icon">🔍</div>
+        <h4>Keresd meg a routert</h4>
+        <p>Nyisd meg a telefon Wi-Fi beállításait. A listában megjelenik egy közeli "ShareIt" nevű hálózat. Kattints rá!</p>
+      </div>
+      <div class="step-card reveal" data-num="2">
+        <div class="step-number-tag">2. lépés</div>
+        <div class="step-icon">🌐</div>
+        <h4>Automatikus átirányítás</h4>
+        <p>Csatlakozás után a telefon automatikusan megnyitja a ShareIt weboldalát. Semmi más teendő, magától jön!</p>
+      </div>
+      <div class="step-card reveal" data-num="3">
+        <div class="step-number-tag">3. lépés</div>
+        <div class="step-icon">💳</div>
+        <h4>Válassz csomagot & fizess</h4>
+        <p>A weboldalon kiválasztod, mennyi adatot szeretnél (pl. 500 MB, 1 GB), és egyszerűen megfizeted. Mint egy italautomata — de netért!</p>
+      </div>
+      <div class="step-card reveal" data-num="4">
+        <div class="step-number-tag">4. lépés</div>
+        <div class="step-icon">🎉</div>
+        <h4>Netezz szabadon!</h4>
+        <p>Kész! Elküldöd azt az üzenetet, megnézed a térképet, vagy scrollozol tovább. A net szabad!</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- WHO BENEFITS -->
+<section id="benefits" class="benefits">
+  <div class="benefits-inner">
+    <div class="section-header reveal">
+      <div class="section-label">Kinek jó ez?</div>
+      <h2>Mindenki jól jár</h2>
+    </div>
+    <div class="benefits-grid">
+      <div class="benefit-block primary reveal">
+        <span class="benefit-emoji">📱</span>
+        <div class="benefit-tag">Neked</div>
+        <h3>Ha elfogyott a neted</h3>
+        <p>Nincs internet? Nem probléma. Megtalálod a legközelebbi ShareIt routert, pár forintért veszel adatot, és már netezesz is. Gyors, olcsó, egyszerű.</p>
+      </div>
+      <div class="benefit-block reveal">
+        <span class="benefit-emoji">💰</span>
+        <div class="benefit-tag">A megosztónak</div>
+        <h3>Ha megmarad az adatkereted</h3>
+        <p>Minden hónapban elfogy az adatkereted anélkül, hogy tényleg felhasználtad volna? Ahelyett hogy kárba vész, megoszted — és pénzt keresel rajta. Pont, mint az Airnb, csak nettel!</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- USE CASES -->
+<section class="use-cases">
+  <div class="section-label" style="background: rgba(255,255,255,0.1); color: var(--accent); display: block; width: fit-content; margin: 0 auto 16px;">Hol hasznos?</div>
+  <h2 class="reveal">Bárhol, ahol van ember — és net kell</h2>
+  <p class="reveal">A ShareIt hálózat különösen hasznos lehet ezeken a helyeken:</p>
+  <div class="cases-row reveal">
+    <div class="case-pill"><span>🎪</span> Fesztiválok</div>
+    <div class="case-pill"><span>🏢</span> Lakótelepek</div>
+    <div class="case-pill"><span>🌳</span> Közösségi terek</div>
+    <div class="case-pill"><span>🎓</span> Iskolák környéke</div>
+    <div class="case-pill"><span>🚉</span> Pályaudvarok</div>
+    <div class="case-pill"><span>🛒</span> Bevásárlóközpontok</div>
+    <div class="case-pill"><span>⚽</span> Sportrendezvények</div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- INNOVATION -->
+<section class="innovation">
+  <div class="innovation-inner">
+    <div class="section-header reveal">
+      <div class="section-label">Mi az újdonság?</div>
+      <h2>Nem kell SIM-kártya, nem kell operátor</h2>
+    </div>
+    <div class="innovation-grid">
+      <div class="innovation-text reveal">
+        <h3>Platform alapú kétoldalú piac — mint az Uber</h3>
+        <p>Az Uber sem autót gyárt — csak összehozza az autósokat és az utasokat. A ShareIt sem mobilszolgáltató — csak összehozza azokat, akiknek van netjük, azokkal, akiknek nincs.</p>
+        <p>A rendszer Wi-Fi-n keresztül működik, vagyis teljesen független a mobilhálózatoktól és a SIM-kártyáktól. Rugalmas, olcsó, és bárhol bevezethető.</p>
+        <div class="highlight-box" style="margin-top: 24px;">
+          <h4>🌍 SIM-kártya nélkül</h4>
+          <p style="color: #ddd5bc;">Hagyományos rendszerben egy SIM-kártyához vagy kötve — egy operátorhoz, egy országhoz. A ShareIt ezt felváltja: az internet-hozzáférés teljesen digitálisan, néhány másodperc alatt aktiválható, bármilyen Wi-Fi-kompatibilis eszközön.</p>
+        </div>
+      </div>
+      <div class="reveal">
+        <div class="comparison-table">
+          <div class="comparison-row header">
+            <div class="comparison-cell">Hagyományos rendszer</div>
+            <div class="comparison-cell">ShareIt rendszer</div>
+          </div>
+          <div class="comparison-row">
+            <div class="comparison-cell bad">❌ SIM-kártyához kötve</div>
+            <div class="comparison-cell good">✅ SIM nélkül is megy</div>
+          </div>
+          <div class="comparison-row">
+            <div class="comparison-cell bad">❌ Egy operátorhoz kötve</div>
+            <div class="comparison-cell good">✅ Operátorfüggetlen</div>
+          </div>
+          <div class="comparison-row">
+            <div class="comparison-cell bad">❌ Megmaradt net elvész</div>
+            <div class="comparison-cell good">✅ Megmaradt net eladható</div>
+          </div>
+          <div class="comparison-row">
+            <div class="comparison-cell bad">❌ Bonyolult szerződés</div>
+            <div class="comparison-cell good">✅ Egyszerű webes fizetés</div>
+          </div>
+          <div class="comparison-row">
+            <div class="comparison-cell bad">❌ Mindig kellenek adatok</div>
+            <div class="comparison-cell good">✅ Azonnali csatlakozás</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- IMPACT -->
+<section class="impact">
+  <div class="impact-inner">
+    <div class="section-label" style="display: block; width: fit-content; margin: 0 auto 20px;">Miért számít?</div>
+    <h2 class="reveal">Jobb a világnak, jobb a pénztárcának</h2>
+    <p class="reveal">A ShareIt nem csak kényelmes — valódi változást hoz.</p>
+    <div class="impact-stats">
+      <div class="stat-block reveal">
+        <div class="stat-icon">♻️</div>
+        <h4>Kevesebb pazarlás</h4>
+        <p>Rengeteg megvásárolt mobiladat fogy el felhasználatlanul minden hónapban. A ShareIt ezt megállítja.</p>
+      </div>
+      <div class="stat-block reveal">
+        <div class="stat-icon">🤝</div>
+        <h4>Digitális egyenlőség</h4>
+        <p>Mindenki hozzáférhet az internethez, akinek szüksége van rá — nem csak azok, akik megengedhetik maguknak.</p>
+      </div>
+      <div class="stat-block reveal">
+        <div class="stat-icon">🌿</div>
+        <h4>Környezettudatos</h4>
+        <p>Az eszközöket is fenntartható módon tervezzük. A projekt gazdaságilag és ökológiailag is előnyös.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- QUOTE -->
+<section class="big-quote">
+  <blockquote class="reveal">
+    A közösségi összefogás erejével még a digitális világban is csökkenthető a pazarlás — semmi sem megy kárba, még akkor sem, ha nem kézzelfogható.
+  </blockquote>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- TEAM -->
+<section id="team" class="team">
+  <div class="team-inner">
+    <div class="section-label" style="display: block; width: fit-content; margin: 0 auto 20px;">A csapat</div>
+    <h2 class="reveal">Két ember, egy nagy ötlet</h2>
+    <p class="reveal">A ShareIt-et két diák álmodta meg és fejleszti, akik hisznek abban, hogy az internet mindenkié lehet.</p>
+    <div class="team-cards">
+      <div class="team-card reveal">
+        <div class="team-avatar">TA</div>
+        <h4>Tóth András</h4>
+        <div class="team-role">üzlet</div>
+        <p></p>
+      </div>
+      <div class="team-card reveal">
+        <div class="team-avatar">FM</div>
+        <h4>Füvesi Magor</h4>
+        <div class="team-role">müszak</div>
+        <p>Magor felelős azért, ami a háttérben történik — a szerver, az adatbázis, a fizetési rendszer, és az egész rendszer logikájának fejlesztéséért.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">ShareIt</div>
+  <div class="footer-tagline">📶 Elfogyott a neted? Most már nem fog.</div>
+  <p>© 2026 ShareIt · Tóth András & Füvesi Magor · Minden jog fenntartva</p>
+</footer>
+
+<script>
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => {
+          entry.target.classList.add('visible');
+        }, 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  reveals.forEach(el => observer.observe(el));
+
+  // Staggered reveals for grids
+  document.querySelectorAll('.steps-grid .step-card, .benefits-grid .benefit-block, .impact-stats .stat-block, .team-cards .team-card').forEach((el, i) => {
+    el.style.transitionDelay = `${i * 0.12}s`;
+  });
+</script>
+
+</body>
+</html>
